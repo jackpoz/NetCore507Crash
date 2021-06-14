@@ -1,6 +1,7 @@
 ﻿using NAudio.Wave;
 using System;
 using System.IO;
+using System.Threading;
 
 namespace NetCore507Crash
 {
@@ -34,6 +35,12 @@ namespace NetCore507Crash
             using FileStream stream = File.OpenRead(filePath);
             for (; ; )
             {
+                if (bufferedWaveProvider != null && bufferedWaveProvider.BufferLength - bufferedWaveProvider.BufferedBytes < bufferedWaveProvider.WaveFormat.AverageBytesPerSecond / 2)
+                {
+                    Thread.Sleep(500);
+                    continue;
+                }
+
                 Mp3Frame frame = Mp3Frame.LoadFromStream(stream);
                 if (frame == null)
                     continue;
